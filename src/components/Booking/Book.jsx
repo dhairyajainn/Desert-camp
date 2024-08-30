@@ -188,7 +188,6 @@ function Book() {
     <>
     <div className='booking'>
       <div className="bookingfilter">
-
           <div className="book-1">
               <h3>Book Now <div className='headingline'></div></h3>
               <h4>Delux Room</h4>
