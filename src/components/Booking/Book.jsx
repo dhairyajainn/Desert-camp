@@ -74,7 +74,7 @@ function Book() {
     const formattedDate = new Date(date).toISOString().split("T")[0];
     const roomAvailability = availability[room.id]?.[formattedDate];
 
-    setRoomQuantity(initialQuantity);
+    setRoomQuantity(initialQuantity); // Reset to initial quantity
 
     if (roomAvailability !== undefined) {
       setAvailabilityMessage(
@@ -98,31 +98,47 @@ function Book() {
 
   const handleBooking = (e) => {
     e.preventDefault();
-  
+
     if (!selectedDate || !checkOutDate) {
       setErrorMessage("Please select both check-in and check-out dates.");
       return;
     }
-  
+
     if (new Date(checkOutDate) <= new Date(selectedDate)) {
       setErrorMessage("Check-out date must be after the check-in date.");
       return;
     }
-  
-    if (availabilityMessage === "Available" && selectedRooms <= roomQuantity) {
-      const formattedDate = new Date(selectedDate).toISOString().split("T")[0];
-  
-      setRoomQuantity(roomQuantity - selectedRooms);
-      dispatch(decrementQuantity({ roomId: room.id, date: formattedDate, quantity: selectedRooms }));
-  
-      if (roomQuantity - selectedRooms <= 0) {
-        setAvailabilityMessage("Room not available");
-      }
-  
-      navigate('/confirmation', { state: { room, selectedDate, checkOutDate, totalPrice, selectedRooms } });
+
+    if (availabilityMessage !== "Available") {
+      setErrorMessage("Room is not available for the selected dates.");
+      return;
     }
+
+    if (selectedRooms > roomQuantity) {
+      setErrorMessage("Cannot book more rooms than available.");
+      return;
+    }
+
+    // If all validations pass, proceed with booking
+    const formattedDate = new Date(selectedDate).toISOString().split("T")[0];
+
+    // Update local quantity
+    setRoomQuantity(roomQuantity - selectedRooms);
+
+    // Dispatch action to update Redux store
+    dispatch(
+      decrementQuantity({
+        roomId: room.id,
+        date: formattedDate,
+        quantity: selectedRooms,
+      })
+    );
+
+    // Navigate to confirmation page
+    navigate("/confirmation", {
+      state: { room, selectedDate, checkOutDate, totalPrice, selectedRooms },
+    });
   };
-  
 
   const redirectToLogin = (e) => {
     e.preventDefault();
@@ -151,7 +167,10 @@ function Book() {
 
           <form action="">
             <div className="mb-4">
-              <h5>Available Rooms: {roomQuantity}</h5>
+              <label htmlFor="">Available Rooms:</label>
+              <p>
+                {roomQuantity} room{roomQuantity > 1 ? "s" : ""} available
+              </p>
             </div>
             <label htmlFor="">Check in:</label>
             <input
@@ -200,11 +219,7 @@ function Book() {
             <select
               className="form-select"
               value={selectedRooms}
-              onChange={(e) => {
-                const newSelectedRooms = parseInt(e.target.value);
-                setSelectedRooms(newSelectedRooms);
-                dispatch(setSelectedRooms(newSelectedRooms));
-              }}
+              onChange={(e) => setSelectedRooms(parseInt(e.target.value))}
             >
               {[...Array(roomQuantity).keys()].map((_, index) => (
                 <option key={index + 1} value={index + 1}>

@@ -1,39 +1,29 @@
-import { createSlice } from "@reduxjs/toolkit";
-
-const initialState = {
-  availability: {},
-  checkOutDate: "",
-  selectedRooms: 1,
-  guestCount: 1,
-};
+import { createSlice } from '@reduxjs/toolkit';
 
 const availabilitySlice = createSlice({
-  name: "availability",
-  initialState,
+  name: 'availability',
+  initialState: {
+    availability: {},
+    checkOutDate: '',
+    // other state variables
+  },
   reducers: {
-    decrementQuantity: (state, action) => {
-      const { roomId, date } = action.payload;
-      if (
-        state.availability[roomId]?.[date] &&
-        state.availability[roomId].quantity > 0
-      ) {
-        state.availability[roomId].quantity -= 1;
-        if (state.availability[roomId].quantity === 0) {
-          state.availability[roomId][date] = false;
-        }
-      }
-    },
-    setSelectedRooms: (state, action) => {
-      state.selectedRooms = action.payload;
-    },
-    setGuestCount: (state, action) => {
-      state.guestCount = action.payload;
-    },
-    setCheckOutDate : (state, action) => {
+    setCheckOutDate: (state, action) => {
       state.checkOutDate = action.payload;
     },
+    decrementQuantity: (state, action) => {
+      const { roomId, date, quantity } = action.payload;
+      if (!state.availability[roomId]) {
+        state.availability[roomId] = {};
+      }
+      if (state.availability[roomId][date]) {
+        state.availability[roomId][date] -= quantity;
+      }
+    },
+    // other reducers
   },
 });
 
-export const { setSelectedRooms, setGuestCount, decrementQuantity, setCheckOutDate } = availabilitySlice.actions;
+export const { setCheckOutDate, decrementQuantity } = availabilitySlice.actions;
+
 export default availabilitySlice.reducer;
