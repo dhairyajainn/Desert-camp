@@ -6,7 +6,7 @@ import {
 } from "react-router-dom";
 import Login from './components/Login/Login'
 import Register from './components/register/Register';
-
+import Confirmation from './components/confirmation/Comfirmation'
 
 
 function App() {
@@ -24,8 +24,11 @@ function App() {
     {
       path: '/register',
       element: <Register />
+    },
+    {
+      path: '/confirmation',
+      element: <Confirmation/>
     }
-    
     
     
   ]);

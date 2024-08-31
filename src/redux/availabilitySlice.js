@@ -2,19 +2,15 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   availability: {},
+  checkOutDate: "",
+  selectedRooms: 1,
+  guestCount: 1,
 };
 
 const availabilitySlice = createSlice({
   name: "availability",
   initialState,
   reducers: {
-    setAvailability: (state, action) => {
-      const { roomId, date, available } = action.payload;
-      if (!state.availability[roomId]) {
-        state.availability[roomId] = {};
-      }
-      state.availability[roomId][date] = available;
-    },
     decrementQuantity: (state, action) => {
       const { roomId, date } = action.payload;
       if (
@@ -27,14 +23,17 @@ const availabilitySlice = createSlice({
         }
       }
     },
-    checkAvailability: (state, action) => {
-      const { roomId, date } = action.payload;
-      return (
-        state.availability[roomId]?.[date] ?? "No data available for this date"
-      );
+    setSelectedRooms: (state, action) => {
+      state.selectedRooms = action.payload;
+    },
+    setGuestCount: (state, action) => {
+      state.guestCount = action.payload;
+    },
+    setCheckOutDate : (state, action) => {
+      state.checkOutDate = action.payload;
     },
   },
 });
 
-export const { setAvailability, checkAvailability, decrementQuantity } = availabilitySlice.actions;
+export const { setSelectedRooms, setGuestCount, decrementQuantity, setCheckOutDate } = availabilitySlice.actions;
 export default availabilitySlice.reducer;
